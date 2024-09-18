@@ -48,7 +48,7 @@ This repository contains scripts to test the KMU File Processing report.
 ## Installation
 
 ```
-git clone https://github.com/younganswer/file-processing-report-tester.git
+git clone https://github.com/younganswer/File-Processing-Report-Tester.git
 ```
 
 </br>
