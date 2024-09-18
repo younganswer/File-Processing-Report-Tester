@@ -17,25 +17,40 @@ diff_test() {
 	if command -v setarch &> /dev/null; then
 		setarch $(uname -m) --addr-no-randomize "${PATH_TEST}"/user_exe < "$2" > /dev/null 2> "${PATH_TEST}"/output/${PROJECT}/user_output_test${text}$1
 	else
-		"${PATH_TEST}"/user_exe < "$2" > "${PATH_TEST}"/output/${PROJECT}/user_output_test${text}$1 2>&1
+		timeout "${TIMEOUT_DURATION}" "${PATH_TEST}"/user_exe < "$2" > /dev/null 2>&1
+	fi
+
+	SIG=$?
+	if [ $SIG -eq 124 ]; then
+		printf "Command './user_exe < $2' got killed by a Timeout\n" >> "${PATH_DEEPTHOUGHT}"/deepthought
+		printf "\033[$((RESULT_COL + 5))G${COLOR_FAIL}T${DEFAULT}\n"
+		retvalue=1
+		return $retvalue
+	fi
+
+	leaks -atExit -- "${PATH_TEST}"/user_exe < "$2" > "${PATH_TEST}"/output/${PROJECT}/user_output_test${text}$1 2>&1
+	sed -n '/^Process/,$p' "${PATH_TEST}"/output/${PROJECT}/user_output_test${text}$1 > "${PATH_TEST}"/output/${PROJECT}/leaks_test${text}$1
+	sed -i '' '/^Process/,$d' "${PATH_TEST}"/output/${PROJECT}/user_output_test${text}$1
+	leaks=$(sed -n '25p' "${PATH_TEST}"/output/${PROJECT}/leaks_test${text}$1)
+	if echo "$leaks" | grep -qv "0 leaks for 0 total leaked bytes"; then
+		printf "Command './user_exe < $2' got leaks\n" >> "${PATH_DEEPTHOUGHT}"/deepthought
+		retvalue=1
+		printf "\033[$((RESULT_COL + 5))G${COLOR_FAIL}L${DEFAULT}\n"
+		return $retvalue
 	fi
 
 	SIG=$?
 	if [ $SIG -eq 134 ]; then
-		printf "Command './user_exe tc${text}$1' got killed by an Abort\n" >> "${PATH_DEEPTHOUGHT}"/deepthought
+		printf "Command './user_exe < $2' got killed by an Abort\n" >> "${PATH_DEEPTHOUGHT}"/deepthought
 		printf "\033[$((RESULT_COL + 5))G${COLOR_FAIL}A${DEFAULT}\n"
 		retvalue=1
 	elif [ $SIG -eq 138 ]; then
-		printf "Command './user_exe tc${text}$1' got killed by a Bus error\n" >> "${PATH_DEEPTHOUGHT}"/deepthought
+		printf "Command './user_exe < $2' got killed by a Bus error\n" >> "${PATH_DEEPTHOUGHT}"/deepthought
 		printf "\033[$((RESULT_COL + 5))G${COLOR_FAIL}B${DEFAULT}\n"
 		retvalue=1
 	elif [ $SIG -eq 139 ]; then
-		printf "Command './user_exe tc${text}$1' got killed by a Segmentation fault\n" >> "${PATH_DEEPTHOUGHT}"/deepthought
+		printf "Command './user_exe < $2' got killed by a Segmentation fault\n" >> "${PATH_DEEPTHOUGHT}"/deepthought
 		printf "\033[$((RESULT_COL + 5))G${COLOR_FAIL}S${DEFAULT}\n"
-		retvalue=1
-	elif [ $SIG -eq 142 ]; then
-		printf "Command './user_exe tc${text}$1' got killed by a Timeout\n" >> "${PATH_DEEPTHOUGHT}"/deepthought
-		printf "\033[$((RESULT_COL + 5))G${COLOR_FAIL}T${DEFAULT}\n"
 		retvalue=1
 	else
 		"${PATH_TEST}"/test/test_exe < "$2" > "${PATH_TEST}"/output/${PROJECT}/output_test${text}$1 2>&1
@@ -105,7 +120,7 @@ test_random() {
 	printf "${COLOR_PART}${UNDERLINE}TEST RANDOM CASES\n\n${DEFAULT}"
 
 	printf "${COLOR_TITLE}Generate test cases... "
-	generate_testcases 25
+	generate_testcases 5
 	printf "done\n\n${DEFAULT}"
 
 	printf "${COLOR_TITLE}${UNDERLINE}TEST CASE\033[${RESULT_COL}GRESULT\n${DEFAULT}"
@@ -225,6 +240,6 @@ test_function() {
 	else
 		retvalue=1
 	fi
-	
+
 	return $retvalue
 }

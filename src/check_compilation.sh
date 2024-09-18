@@ -53,7 +53,7 @@ check_compilation() {
 		WEXTRA=0
 	fi
 
-	${COMPILER} -Werror -g3 "${PATH_TEST}"/${PATH_SUBMIT}/${SRC_FILE} -o user_exe 2>> "${PATH_DEEPTHOUGHT}"/deepthought
+	${COMPILER} -Werror -g3 -fsanitize=address "${PATH_TEST}"/${PATH_SUBMIT}/${SRC_FILE} -o user_exe 2>> "${PATH_DEEPTHOUGHT}"/deepthought
 	if [ -e "${PATH_TEST}/user_exe" ]; then
 		WERROR=1
 		rm -f ${PATH_TEST}/user_exe

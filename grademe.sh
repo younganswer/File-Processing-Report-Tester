@@ -68,7 +68,7 @@ sleep 2
 test_function
 
 if [ $retvalue -eq 1 ]; then
-	printf "Fail: ${RED}[KO]${DEFAULT}  Abort: ${RED}A${DEFAULT}  Bus error: ${RED}B${DEFAULT}  Segmentation fault: ${RED}S${DEFAULT}  Timeout: ${RED}T${DEFAULT}\n\n"
+	printf "Fail: ${RED}[KO]${DEFAULT}  Abort: ${RED}A${DEFAULT}  Bus error: ${RED}B${DEFAULT}  Segmentation fault: ${RED}S${DEFAULT}  Timeout: ${RED}T${DEFAULT}  Leak: ${RED}L${DEFAULT}\n\n"
 fi
 
 if [ -e "${PATH_TEST}/test/test_exe" ]; then
