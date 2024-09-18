@@ -104,8 +104,8 @@ test_simple() {
 test_random() {
 	printf "${COLOR_PART}${UNDERLINE}TEST RANDOM CASES\n\n${DEFAULT}"
 
-	printf "${COLOR_TITLE}Generate test cases..."
-	generate_testcases 5
+	printf "${COLOR_TITLE}Generate test cases... "
+	generate_testcases 25
 	printf "done\n\n${DEFAULT}"
 
 	printf "${COLOR_TITLE}${UNDERLINE}TEST CASE\033[${RESULT_COL}GRESULT\n${DEFAULT}"
