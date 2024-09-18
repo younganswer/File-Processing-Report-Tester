@@ -157,7 +157,7 @@ test_user_defined() {
 	user_defined_cases=()
 	while IFS= read -r file; do
 		user_defined_cases+=("$file")
-	done < <(find "${PATH_TEST}/testcase" -type f -not -name 'simple*' -not -name 'random*' -not -name '*output*' -not -name '.DS_Store' | sort)
+	done < <(find "${PATH_TEST}/testcase" -type f -not -name 'simple*' -not -name 'random*' -not -name '*output*' -not -name '.DS_Store' -not name 'README.md' | sort)
 	total=${#user_defined_cases[@]}
 	retvalue=0
 	if [ $total -eq 0 ]; then
