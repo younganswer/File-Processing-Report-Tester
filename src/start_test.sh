@@ -1,12 +1,8 @@
 #!/bin/bash
 
 test_cases() {
-	cases=()
-	while IFS= read -r file; do
-		cases+=("$file")
-	done < <(find "${PATH_TEST}"/testcase/${PROJECT} $1 | sort)
+	cases=($(find "${PATH_TEST}"/testcase/${PROJECT} $1 | sort))
 	total=${#cases[@]}
-
 	let "i=0"
 	let "success=0"
 	while [ $i -lt $total ]; do
