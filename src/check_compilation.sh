@@ -1,5 +1,24 @@
 #!/bin/bash
 
+compile() {
+	retvalue=0
+
+	${COMPILER} $1 "${PATH_TEST}"/${PATH_SUBMIT}/${SRC_FILE} -o user_exe 2>> "${PATH_DEEPTHOUGHT}"/deepthought
+	if [ ! -e "${PATH_TEST}/user_exe" ]; then
+		retvalue=1
+	fi
+
+	return $retvalue
+}
+
+print_compilation_result() {
+	if [ $1 -eq 0 ]; then
+		printf "\033[$2G${COLOR_OK}success${DEFAULT}"
+	else
+		printf "\033[$2G${COLOR_FAIL}failure${DEFAULT}"
+	fi
+}
+
 check_compilation() {
 	text="COMPILING"
 	printf "${COLOR_TITLE}"
@@ -22,69 +41,26 @@ check_compilation() {
 		text="Missing source file, can't compile."
 		printf "\033[$(( (${TITLE_LENGTH} - ${#text}) / 2 ))G${COLOR_FAIL}${text}${DEFAULT}\n\n"
 		printf "\n${text}\n" >> "${PATH_DEEPTHOUGHT}"/deepthought
-		retvalue=0
-		return $retvalue
+		return 1
 	fi
 
 	printf "\n$> ${COMPILER} -Wall -Wextra -Werror -g3 -fsanitize=address ${PATH_TEST}/${PATH_SUBMIT}/${SRC_FILE} -o user_exe\n" >> "${PATH_DEEPTHOUGHT}"/deepthought
 
-	${COMPILER} -g3 -fsanitize=address "${PATH_TEST}"/${PATH_SUBMIT}/${SRC_FILE} -o user_exe 2>> "${PATH_DEEPTHOUGHT}"/deepthought
-	if [ -e "${PATH_TEST}/user_exe" ]; then
-		RESULT=1
-		rm -f ${PATH_TEST}/user_exe
-	else
-		RESULT=0
-		retvalue=0
-	fi
-
-	${COMPILER} -Wall -g3 -fsanitize=address "${PATH_TEST}"/${PATH_SUBMIT}/${SRC_FILE} -o user_exe 2>> "${PATH_DEEPTHOUGHT}"/deepthought
-	if [ -e "${PATH_TEST}/user_exe" ]; then
-		WALL=1
-		rm -f ${PATH_TEST}/user_exe
-	else
-		WALL=0
-	fi
-
-	${COMPILER} -Wextra -g3 -fsanitize=address "${PATH_TEST}"/${PATH_SUBMIT}/${SRC_FILE} -o user_exe 2>> "${PATH_DEEPTHOUGHT}"/deepthought
-	if [ -e "${PATH_TEST}/user_exe" ]; then
-		WEXTRA=1
-		rm -f ${PATH_TEST}/user_exe
-	else
-		WEXTRA=0
-	fi
-
-	${COMPILER} -Werror -g3 -fsanitize=address "${PATH_TEST}"/${PATH_SUBMIT}/${SRC_FILE} -o user_exe 2>> "${PATH_DEEPTHOUGHT}"/deepthought
-	if [ -e "${PATH_TEST}/user_exe" ]; then
-		WERROR=1
-		rm -f ${PATH_TEST}/user_exe
-	else
-		WERROR=0
-	fi
-
-	${COMPILER} -g3 "${PATH_TEST}"/${PATH_SUBMIT}/${SRC_FILE} -o user_exe 2>> "${PATH_DEEPTHOUGHT}"/deepthought
+	compile "-Wall -g3 -fsanitize=address"
+	WALL=$?
+	compile "-Wextra -g3 -fsanitize=address"
+	WEXTRA=$?
+	compile "-Werror -g3 -fsanitize=address"
+	WERROR=$?
+	compile "-g3"
+	retvalue=$?
 	
 	printf "COMPILER\033[16GRESULT\033[32G-Wall\033[48G-Wextra\033[64G-Werror\n"
 	printf "${COLOR_OK}${COMPILER}${DEFAULT}"
-	if [ $RESULT -eq 1 ]; then
-		printf "\033[16G${COLOR_OK}success${DEFAULT}"
-	else
-		printf "\033[16G${COLOR_FAIL}failure${DEFAULT}"
-	fi
-	if [ $WALL -eq 1 ]; then
-		printf "\033[32G${COLOR_OK}success${DEFAULT}"
-	else
-		printf "\033[32G${COLOR_FAIL}failure${DEFAULT}"
-	fi
-	if [ $WEXTRA -eq 1 ]; then
-		printf "\033[48G${COLOR_OK}success${DEFAULT}"
-	else
-		printf "\033[48G${COLOR_FAIL}failure${DEFAULT}"
-	fi
-	if [ $WERROR -eq 1 ]; then
-		printf "\033[64G${COLOR_OK}success${DEFAULT}"
-	else
-		printf "\033[64G${COLOR_FAIL}failure${DEFAULT}"
-	fi
+	print_compilation_result $retvalue 16
+	print_compilation_result $WALL 32
+	print_compilation_result $WEXTRA 48
+	print_compilation_result $WERROR 64
 
 	printf "\n\n"
 

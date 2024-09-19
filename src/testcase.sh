@@ -9,7 +9,6 @@ generate_testcase() {
 
 	filename="${PATH_TEST}"/testcase/${PROJECT}/random${text}$1
 	for i in {0..99}; do
-		# select random instruction between 'i' and 'd'
 		instruction=$(shuf -n 1 -e 'i' 'd')
 		number=$(shuf -i 1-25 -n1)
 		echo "$instruction $number" >> "$filename"
