@@ -12,7 +12,7 @@ test_cases() {
 			text=""
 		fi
 		printf "${COLOR_TESTCASE}#${text}$i"
-		diff_test "$2${text}$i" "${cases[$i]}"
+		diff_test "${cases[$i]}"
 		if [ $? -eq 0 ]; then
 			let "success += 1"
 		fi
@@ -42,7 +42,7 @@ test_simple_case() {
 	printf "${COLOR_PART}${UNDERLINE}TEST SIMPLE CASES\n\n${DEFAULT}"
 	printf "${COLOR_TITLE}${UNDERLINE}TEST CASE\033[${RESULT_COL}GRESULT\n${DEFAULT}"
 
-	test_cases "-type f -name simple*" "SIMPLE"
+	test_cases "-type f -name simple*"
 
 	return $?
 }
@@ -54,7 +54,7 @@ test_random_case() {
 	printf "done\n\n${DEFAULT}"
 	printf "${COLOR_TITLE}${UNDERLINE}TEST CASE\033[${RESULT_COL}GRESULT\n${DEFAULT}"
 
-	test_cases "-type f -name random*" "RANDOM"
+	test_cases "-type f -name random*"
 
 	remove_testcases
 
@@ -65,7 +65,7 @@ test_user_defined_case() {
 	printf "${COLOR_PART}${UNDERLINE}TEST USER DEFINED CASES\n\n${DEFAULT}"
 	printf "${COLOR_TITLE}${UNDERLINE}TEST CASE\033[${RESULT_COL}GRESULT\n${DEFAULT}"
 
-	test_cases "-type f -not -name simple* -not -name random* -not -name *output* -not -name .DS_Store -not name README.md" "USER DEFINED"
+	test_cases "-type f -not -name simple* -not -name random* -not -name *output* -not -name .DS_Store -not name README.md"
 
 	return $?
 }
