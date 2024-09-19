@@ -2,6 +2,8 @@
 
 This repository contains scripts to test the KMU File Processing report.
 
+This tester is developed on MacOS-Sonoma 14.2, It may not work on other operating systems.
+
 </br>
 
 <img align="right" src="./assets/result.png" width="50%"/>
