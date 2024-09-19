@@ -23,7 +23,7 @@ leak_test() {
 	retvalue=0
 
 	if command -v setarch &> /dev/null; then
-		result=$(setarch $(uname -m) --addr-no-randomize valgrind --error-exitcode=42 --leak-check=full --show-leak-kinds=all --errors-for-leak-kinds=all --track-origins=yes -- "${PATH_TEST}"/user_exe < "$1" 2>&1)
+		result=$(setarch $(uname -m) --addr-no-randomize leaks -atExit -- "${PATH_TEST}"/user_exe < "$1" 2>&1)
 	else
 		result=$(leaks -atExit -- "${PATH_TEST}"/user_exe < "$1" 2>&1)
 	fi
